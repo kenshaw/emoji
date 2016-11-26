@@ -12,7 +12,7 @@ import (
 // Gemoji is a set of emoji data.
 type Gemoji []Emoji
 
-// Emoji represents a single emoji and its associated data.
+// Emoji represents a single emoji and associated data.
 type Emoji struct {
 	Emoji          string   `json:"emoji"`
 	Description    string   `json:"description"`
@@ -127,8 +127,8 @@ func FromAlias(alias string) *Emoji {
 	return &GemojiData[i]
 }
 
-// ReplaceCodes is the inverse of ReplaceAliases, replacing all emoji codes
-// with its first corresponding alias.
+// ReplaceCodes replaces all emoji codes with its first corresponding emoji
+// alias.
 func ReplaceCodes(s string) string {
 	return codeReplacer.Replace(s)
 }
@@ -149,7 +149,7 @@ func emoticonReplacer(s string, repl map[string]string) string {
 		return s
 	}
 
-	// build string with replacements
+	// build replacement string
 	var buf bytes.Buffer
 	last := 0
 	for _, m := range matches {
