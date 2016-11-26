@@ -127,7 +127,7 @@ func FromAlias(alias string) *Emoji {
 	return &GemojiData[i]
 }
 
-// ReplaceCodes replaces all emoji codes with its first corresponding emoji
+// ReplaceCodes replaces all emoji codes with the first corresponding emoji
 // alias.
 func ReplaceCodes(s string) string {
 	return codeReplacer.Replace(s)

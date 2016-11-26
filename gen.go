@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -37,15 +36,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// open out
-	file, err := os.Create(*flagOut)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
 	// write
-	_, err = file.Write(buf)
+	err = ioutil.WriteFile(*flagOut, buf, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,9 +80,8 @@ func generate() ([]byte, error) {
 		return nil, err
 	}
 
-	// add header and format
-	str := fmt.Sprintf(hdr, gemojiURL, data)
-	str = replacer.Replace(str)
+	// add header
+	str := replacer.Replace(fmt.Sprintf(hdr, gemojiURL, data))
 
 	// change the format of the unicode string
 	str = emojiRE.ReplaceAllStringFunc(str, func(s string) string {
@@ -102,13 +93,14 @@ func generate() ([]byte, error) {
 		return "{" + strconv.QuoteToASCII(s)
 	})
 
+	// format
 	return format.Source([]byte(str))
 }
 
 const hdr = `
 package emoji
 
-// GemojiData is the original set of Gemoji data.
+// GemojiData is the original Gemoji data.
 //
 // see: %s
 var GemojiData = %#v

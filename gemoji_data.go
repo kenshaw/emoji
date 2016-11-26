@@ -1,6 +1,6 @@
 package emoji
 
-// GemojiData is the original set of Gemoji data.
+// GemojiData is the original Gemoji data.
 //
 // see: https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json
 var GemojiData = Gemoji{
