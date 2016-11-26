@@ -11,6 +11,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
 	. "github.com/knq/emoji"
@@ -53,7 +55,6 @@ var replacer = strings.NewReplacer(
 	"emoji.Gemoji", "Gemoji",
 	"emoji.Emoji", "\n",
 	"}}", "},\n}",
-	"{Emoji:", "{",
 	", Description:", ", ",
 	", Category:", ", ",
 	", Aliases:", ", ",
@@ -61,6 +62,8 @@ var replacer = strings.NewReplacer(
 	", UnicodeVersion:", ", ",
 	", IOSVersion:", ", ",
 )
+
+var emojiRE = regexp.MustCompile(`\{Emoji:"([^"]*)"`)
 
 func generate() ([]byte, error) {
 	var err error
@@ -88,6 +91,17 @@ func generate() ([]byte, error) {
 	// add header and format
 	str := fmt.Sprintf(hdr, gemojiURL, data)
 	str = replacer.Replace(str)
+
+	// change the format of the unicode string
+	str = emojiRE.ReplaceAllStringFunc(str, func(s string) string {
+		var err error
+		s, err = strconv.Unquote(s[len("{Emoji:"):])
+		if err != nil {
+			panic(err)
+		}
+		return "{" + strconv.QuoteToASCII(s)
+	})
+
 	return format.Source([]byte(str))
 }
 
