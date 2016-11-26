@@ -1,11 +1,15 @@
-// Package emoji provides standard tools for working with emoji data.
+// Package emoji provides standard tools for working with emoji unicode codes and aliases.
 package emoji
 
-import "strings"
+import (
+	"bytes"
+	"regexp"
+	"strings"
+)
 
 //go:generate go run gen.go
 
-// Gemoji is the set of emoji data.
+// Gemoji is a set of emoji data.
 type Gemoji []Emoji
 
 // Emoji represents a single emoji and its associated data.
@@ -19,32 +23,50 @@ type Emoji struct {
 	IOSVersion     string   `json:"ios_version"`
 }
 
-// codeMap provides a map of the unicode code to emoji values.
-var codeMap map[string]*Emoji
+var (
+	// codeMap provides a map of the emoji unicode code to its emoji data.
+	codeMap map[string]int
 
-// aliasMap provides a map of the alias to emoji values.
-var aliasMap map[string]*Emoji
+	// aliasMap provides a map of the alias to its emoji data.
+	aliasMap map[string]int
 
-// codeReplacer is the string replacer for emoji values.
-var codeReplacer *strings.Replacer
+	// codeReplacer is the string replacer for emoji codes.
+	codeReplacer *strings.Replacer
 
-// aliasReplacer is the string replacer for aliases.
-var aliasReplacer *strings.Replacer
+	// aliasReplacer is the string replacer for emoji aliases.
+	aliasReplacer *strings.Replacer
+
+	// aliasEmoticonReplacer is the string replacer for emoji aliases with
+	// emoticons.
+	aliasEmoticonReplacer *strings.Replacer
+
+	// emoticonRE is the regexp to match emoticons on word boundaries.
+	emoticonRE *regexp.Regexp
+
+	// emoticonCodeMap is the map of emoticons to their emoji value.
+	emoticonCodeMap map[string]string
+
+	// emoticonCodeMap is the map of emoticons to their emoji alias.
+	emoticonAliasMap map[string]string
+)
 
 func init() {
 	// initialize
-	codeMap = make(map[string]*Emoji, len(GemojiData))
-	aliasMap = make(map[string]*Emoji, len(GemojiData))
+	codeMap = make(map[string]int, len(GemojiData))
+	aliasMap = make(map[string]int, len(GemojiData))
+	emoticonCodeMap = make(map[string]string, 0)
+	emoticonAliasMap = make(map[string]string, 0)
 
+	// process emoji codes and aliases
 	codePairs := make([]string, 0)
 	aliasPairs := make([]string, 0)
-	for _, e := range GemojiData {
+	for i, e := range GemojiData {
 		if e.Emoji == "" || len(e.Aliases) == 0 {
 			continue
 		}
 
 		// setup codes
-		codeMap[e.Emoji] = &e
+		codeMap[e.Emoji] = i
 		codePairs = append(codePairs, e.Emoji, ":"+e.Aliases[0]+":")
 
 		// setup aliases
@@ -53,33 +75,60 @@ func init() {
 				continue
 			}
 
-			aliasMap[a] = &e
+			aliasMap[a] = i
 			aliasPairs = append(aliasPairs, ":"+a+":", e.Emoji)
 		}
 	}
 
+	// process emoticons
+	reVals := make([]string, 0)
+	aliasEmoticonPairs := make([]string, 0)
+	for a, vals := range emoticonMap {
+		alias := ":" + a + ":"
+		aliasEmoticonPairs = append(aliasEmoticonPairs, alias, vals[0])
+		for _, u := range vals {
+			reVals = append(reVals, regexp.QuoteMeta(u))
+			emoticonCodeMap[u] = GemojiData[aliasMap[a]].Emoji
+			emoticonAliasMap[u] = alias
+		}
+	}
+
+	// create emoticon regexp
+	emoticonRE = regexp.MustCompile(`(?m:^|\A|\s|\B)(` + strings.Join(reVals, "|") + `)(?:$|\z|\s)`)
+
 	// create replacers
 	codeReplacer = strings.NewReplacer(codePairs...)
 	aliasReplacer = strings.NewReplacer(aliasPairs...)
+	aliasEmoticonReplacer = strings.NewReplacer(aliasEmoticonPairs...)
 }
 
-// FromCode retrieves the emoji entry based on the unicode code.
+// FromCode retrieves the emoji data based on the unicode code.
 func FromCode(code string) *Emoji {
-	return codeMap[code]
+	i, ok := codeMap[code]
+	if !ok {
+		return nil
+	}
+
+	return &GemojiData[i]
 }
 
-// FromAlias retrieves the emoji entry based on the provided alias in the form
+// FromAlias retrieves the emoji data based on the provided alias in the form
 // "alias" or ":alias:".
 func FromAlias(alias string) *Emoji {
 	if strings.HasPrefix(alias, ":") && strings.HasSuffix(alias, ":") {
 		alias = alias[1 : len(alias)-1]
 	}
 
-	return aliasMap[alias]
+	i, ok := aliasMap[alias]
+	if !ok {
+		return nil
+	}
+
+	return &GemojiData[i]
 }
 
 // ReplaceCodes is the inverse of ReplaceAliases, replacing all emoji codes
-// with its corresponding alias.
+// with its first corresponding alias.
 func ReplaceCodes(s string) string {
 	return codeReplacer.Replace(s)
 }
@@ -88,4 +137,50 @@ func ReplaceCodes(s string) string {
 // corresponding unicode value.
 func ReplaceAliases(s string) string {
 	return aliasReplacer.Replace(s)
+}
+
+// emoticonReplacer replaces all emoticons in s with the corresponding repl
+// value.
+func emoticonReplacer(s string, repl map[string]string) string {
+	matches := emoticonRE.FindAllStringSubmatchIndex(s, -1)
+
+	// bail if no matches
+	if len(matches) == 0 {
+		return s
+	}
+
+	// build string with replacements
+	var buf bytes.Buffer
+	last := 0
+	for _, m := range matches {
+		buf.WriteString(s[last:m[2]])
+		e, ok := repl[s[m[2]:m[3]]]
+		if !ok {
+			panic("could not find emoticon!!")
+		}
+		buf.WriteString(e)
+		last = m[3]
+	}
+	buf.WriteString(s[last:])
+
+	return string(buf.Bytes())
+}
+
+// ReplaceEmoticonsWithCodes replaces all emoticons (ie, :D, :p, etc) with its
+// corresponding emoji code.
+func ReplaceEmoticonsWithCodes(s string) string {
+	return emoticonReplacer(s, emoticonCodeMap)
+}
+
+// ReplaceEmoticonsWithAliases replaces all emoticons (ie, :D, :p, etc) with
+// its corresponding emoji alias (in the form of :alias:).
+func ReplaceEmoticonsWithAliases(s string) string {
+	return emoticonReplacer(s, emoticonAliasMap)
+}
+
+// ReplaceAliasesWithEmoticons replaces all emoji aliases (in the form of
+// :alias:) with its corresponding emoticon (ie, :D, :p, etc) if the alias has
+// a corresponding emoticon.
+func ReplaceAliasesWithEmoticons(s string) string {
+	return aliasEmoticonReplacer.Replace(s)
 }
