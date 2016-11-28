@@ -102,7 +102,8 @@ func init() {
 	aliasEmoticonReplacer = strings.NewReplacer(aliasEmoticonPairs...)
 }
 
-// FromCode retrieves the emoji data based on the unicode code.
+// FromCode retrieves the emoji data based on the provided unicode code (ie,
+// "\u2618" will return the Gemoji data for "shamrock").
 func FromCode(code string) *Emoji {
 	i, ok := codeMap[code]
 	if !ok {
@@ -113,7 +114,8 @@ func FromCode(code string) *Emoji {
 }
 
 // FromAlias retrieves the emoji data based on the provided alias in the form
-// "alias" or ":alias:".
+// "alias" or ":alias:" (ie, "shamrock" or ":shamrock:" will return the Gemoji
+// data for "shamrock").
 func FromAlias(alias string) *Emoji {
 	if strings.HasPrefix(alias, ":") && strings.HasSuffix(alias, ":") {
 		alias = alias[1 : len(alias)-1]
@@ -127,8 +129,20 @@ func FromAlias(alias string) *Emoji {
 	return &GemojiData[i]
 }
 
+// FromEmoticon retrieves the emoji data based on the provided emoticon (ie,
+// ":o)" will return the Gemoji data for "monkey face").
+func FromEmoticon(emoticon string) *Emoji {
+	alias, ok := emoticonAliasMap[emoticon]
+	if !ok {
+		return nil
+	}
+
+	return FromAlias(alias)
+}
+
 // ReplaceCodes replaces all emoji codes with the first corresponding emoji
-// alias.
+// alias (in the form of ":alias:") (ie, "\u2618" will be converted to
+// ":shamrock:").
 func ReplaceCodes(s string) string {
 	return codeReplacer.Replace(s)
 }
@@ -139,8 +153,8 @@ func ReplaceAliases(s string) string {
 	return aliasReplacer.Replace(s)
 }
 
-// emoticonReplacer replaces all emoticons in s with the corresponding repl
-// value.
+// emoticonReplacer replaces all matched emoticon strings in s with the its
+// corresponding map'd value in repl.
 func emoticonReplacer(s string, repl map[string]string) string {
 	matches := emoticonRE.FindAllStringSubmatchIndex(s, -1)
 
@@ -166,21 +180,23 @@ func emoticonReplacer(s string, repl map[string]string) string {
 	return string(buf.Bytes())
 }
 
-// ReplaceEmoticonsWithCodes replaces all emoticons (ie, :D, :p, etc) with its
-// corresponding emoji code.
+// ReplaceEmoticonsWithCodes replaces all emoticons (ie, :D, :p, etc) with the
+// corresponding emoji code (ie, the monkey face emoticon ":o)" will be
+// replaced with "\U0001f435").
 func ReplaceEmoticonsWithCodes(s string) string {
 	return emoticonReplacer(s, emoticonCodeMap)
 }
 
 // ReplaceEmoticonsWithAliases replaces all emoticons (ie, :D, :p, etc) with
-// its corresponding emoji alias (in the form of :alias:).
+// the first corresponding emoji alias (in the form of :alias:) (ie, the monkey
+// face emoticon ":o)" will be replaced with ":monkey_face:").
 func ReplaceEmoticonsWithAliases(s string) string {
 	return emoticonReplacer(s, emoticonAliasMap)
 }
 
 // ReplaceAliasesWithEmoticons replaces all emoji aliases (in the form of
-// :alias:) with its corresponding emoticon (ie, :D, :p, etc) if the alias has
-// a corresponding emoticon.
+// :alias:) with its corresponding emoticon (ie, :D, :p, etc) (ie, the alias
+// ":monkey_face:" will be replaced with ":o)").
 func ReplaceAliasesWithEmoticons(s string) string {
 	return aliasEmoticonReplacer.Replace(s)
 }
