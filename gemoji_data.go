@@ -6,7 +6,7 @@ package emoji
 var GemojiData = Gemoji{
 	{"\U0001f600", "grinning face", "People", []string{"grinning"}, []string{"smile", "happy"}, "6.1", "6.0"},
 	{"\U0001f603", "smiling face with open mouth", "People", []string{"smiley"}, []string{"happy", "joy", "haha"}, "6.0", "6.0"},
-	{"\U0001f604", "smiling face with open mouth & smiling eyes", "People", []string{"smile"}, []string{"happy", "joy", "pleased"}, "6.0", "6.0"},
+	{"\U0001f604", "smiling face with open mouth & smiling eyes", "People", []string{"smile"}, []string{"happy", "joy", "laugh", "pleased"}, "6.0", "6.0"},
 	{"\U0001f601", "grinning face with smiling eyes", "People", []string{"grin"}, []string{}, "6.0", "6.0"},
 	{"\U0001f606", "smiling face with open mouth & closed eyes", "People", []string{"laughing", "satisfied"}, []string{"happy", "haha"}, "6.0", "6.0"},
 	{"\U0001f605", "smiling face with open mouth & cold sweat", "People", []string{"sweat_smile"}, []string{"hot"}, "6.0", "6.0"},
@@ -841,7 +841,7 @@ var GemojiData = Gemoji{
 	{"\U0001f38f", "carp streamer", "Objects", []string{"flags"}, []string{}, "6.0", "6.0"},
 	{"\U0001f380", "ribbon", "Objects", []string{"ribbon"}, []string{}, "6.0", "6.0"},
 	{"\U0001f38a", "confetti ball", "Objects", []string{"confetti_ball"}, []string{}, "6.0", "6.0"},
-	{"\U0001f389", "party popper", "Objects", []string{"tada"}, []string{"party"}, "6.0", "6.0"},
+	{"\U0001f389", "party popper", "Objects", []string{"tada"}, []string{"hooray", "party"}, "6.0", "6.0"},
 	{"\U0001f38e", "Japanese dolls", "Objects", []string{"dolls"}, []string{}, "6.0", "6.0"},
 	{"\U0001f3ee", "red paper lantern", "Objects", []string{"izakaya_lantern", "lantern"}, []string{}, "6.0", "6.0"},
 	{"\U0001f390", "wind chime", "Objects", []string{"wind_chime"}, []string{}, "6.0", "6.0"},
