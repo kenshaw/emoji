@@ -54,8 +54,8 @@ func init() {
 	// initialize
 	codeMap = make(map[string]int, len(GemojiData))
 	aliasMap = make(map[string]int, len(GemojiData))
-	emoticonCodeMap = make(map[string]string, 0)
-	emoticonAliasMap = make(map[string]string, 0)
+	emoticonCodeMap = make(map[string]string)
+	emoticonAliasMap = make(map[string]string)
 
 	// process emoji codes and aliases
 	codePairs := make([]string, 0)
@@ -177,7 +177,7 @@ func emoticonReplacer(s string, repl map[string]string) string {
 	}
 	buf.WriteString(s[last:])
 
-	return string(buf.Bytes())
+	return buf.String()
 }
 
 // ReplaceEmoticonsWithCodes replaces all emoticons (ie, :D, :p, etc) with the
