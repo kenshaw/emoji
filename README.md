@@ -1,19 +1,68 @@
 # About emoji
 
-Package emoji provides standardized ways for translating unicode code points
-for Emoji to/from their [emoji cheat sheet](http://www.webpagefx.com/tools/emoji-cheat-sheet/)
-encoding. This is useful when working with third party APIs such as Slack,
-GitHub, etc.
+`emoji` provides standardized ways for translating unicode code points for
+Emoji to/from their [emoji cheat sheet][emoji-cheat-sheet] encoding, and is
+most useful when working with third-party APIs such as Slack, GitHub, etc.
 
-This was written because the existing Go emoji packages only provided cheat
-sheet names to unicode conversion, and not the opposite. Also, I was not able
-to find any emoticon packages for Go.
+`emoji` was written because other emoji packages for Go only provided cheat
+sheet names to unicode conversion and not the inverse. Additionally, there were
+no comprehensive [emoticon][wiki-emoticon] packages available at the time.
 
-# Gemoji Data
+## Gemoji Data
 
-The data for this package is generated from GitHub's [gemoji](https://github.com/github/gemoji)
-project.
+Data for this package is generated from GitHub's [gemoji][gemoji] project:
 
-# TODO
+```sh
+$ cd $GOPATH/src/github.com/brankas/emoji
+$ go generate
+```
 
-* Convert `UnicodeVersion` and `IOSVersion` fields of `Emoji` type to something more easily comparable (ie, int)
+## Installing
+
+Install in the usual [Go][go-project] fashion:
+
+```sh
+$ go get -u github.com/brankas/emoji
+```
+
+## Using
+
+`emoji` can be used similarly to the following:
+
+```go
+// example/example.go
+package main
+
+import (
+	"log"
+
+	"github.com/brankas/emoji"
+)
+
+func main() {
+	a := emoji.FromEmoticon(":-)")
+	log.Printf(":-) %+v", a)
+
+	b := emoji.FromAlias("slightly_smiling_face")
+	log.Printf(":-) %+v", b)
+
+	s := emoji.ReplaceEmoticonsWithAliases(":-) :D >:(")
+	log.Printf("s: %s", s)
+
+	n := emoji.ReplaceEmoticonsWithCodes(":-) :D >:(")
+	log.Printf("n: %s", n)
+}
+```
+
+Please see the [GoDoc][godoc] listing for the complete API listing.
+
+## TODO
+
+* Convert `UnicodeVersion` and `IOSVersion` fields of `Emoji` type to something
+  more easily comparable (ie, int)
+
+[emoji-cheat-sheet]: http://www.webpagefx.com/tools/emoji-cheat-sheet/
+[gemoji]: https://github.com/github/gemoji
+[godoc]: https://godoc.org/github.com/brankas/emoji
+[go-project]: https://golang.org/project
+[wiki-emoticon]: https://en.wikipedia.org/wiki/Emoticon
