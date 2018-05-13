@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	. "github.com/knq/emoji"
+	. "github.com/brankas/emoji"
 )
 
 const (
