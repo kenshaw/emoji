@@ -58,28 +58,20 @@ func init() {
 	emoticonAliasMap = make(map[string]string)
 
 	// process emoji codes and aliases
-	codePairs := make([]string, 0)
-	aliasPairs := make([]string, 0)
+	var codePairs, aliasPairs []string
 	for i, e := range GemojiData {
 		if e.Emoji == "" || len(e.Aliases) == 0 {
 			continue
 		}
-
-		// setup codes
-		codeMap[e.Emoji] = i
-		codePairs = append(codePairs, e.Emoji, ":"+e.Aliases[0]+":")
-
-		// setup aliases
+		// codes and aliases
+		codeMap[e.Emoji], codePairs = i, append(codePairs, e.Emoji, ":"+e.Aliases[0]+":")
 		for _, a := range e.Aliases {
 			if a == "" {
 				continue
 			}
-
-			aliasMap[a] = i
-			aliasPairs = append(aliasPairs, ":"+a+":", e.Emoji)
+			aliasMap[a], aliasPairs = i, append(aliasPairs, ":"+a+":", e.Emoji)
 		}
 	}
-
 	// process emoticons
 	reVals := make([]string, 0)
 	aliasEmoticonPairs := make([]string, 0)
@@ -92,10 +84,8 @@ func init() {
 			emoticonAliasMap[u] = alias
 		}
 	}
-
 	// create emoticon regexp
 	emoticonRE = regexp.MustCompile(`(?m:^|\A|\s|\B)(` + strings.Join(reVals, "|") + `)(?:$|\z|\s)`)
-
 	// create replacers
 	codeReplacer = strings.NewReplacer(codePairs...)
 	aliasReplacer = strings.NewReplacer(aliasPairs...)
@@ -109,7 +99,6 @@ func FromCode(code string) *Emoji {
 	if !ok {
 		return nil
 	}
-
 	return &GemojiData[i]
 }
 
@@ -120,12 +109,10 @@ func FromAlias(alias string) *Emoji {
 	if strings.HasPrefix(alias, ":") && strings.HasSuffix(alias, ":") {
 		alias = alias[1 : len(alias)-1]
 	}
-
 	i, ok := aliasMap[alias]
 	if !ok {
 		return nil
 	}
-
 	return &GemojiData[i]
 }
 
@@ -136,7 +123,6 @@ func FromEmoticon(emoticon string) *Emoji {
 	if !ok {
 		return nil
 	}
-
 	return FromAlias(alias)
 }
 
@@ -157,12 +143,10 @@ func ReplaceAliases(s string) string {
 // corresponding map'd value in repl.
 func emoticonReplacer(s string, repl map[string]string) string {
 	matches := emoticonRE.FindAllStringSubmatchIndex(s, -1)
-
 	// bail if no matches
 	if len(matches) == 0 {
 		return s
 	}
-
 	// build replacement string
 	var buf bytes.Buffer
 	last := 0
@@ -176,7 +160,6 @@ func emoticonReplacer(s string, repl map[string]string) string {
 		last = m[3]
 	}
 	buf.WriteString(s[last:])
-
 	return buf.String()
 }
 
@@ -199,4 +182,26 @@ func ReplaceEmoticonsWithAliases(s string) string {
 // ":monkey_face:" will be replaced with ":o)").
 func ReplaceAliasesWithEmoticons(s string) string {
 	return aliasEmoticonReplacer.Replace(s)
+}
+
+// emoticonMap is a map of emoji aliases to emoticon counterparts.
+var emoticonMap = map[string][]string{
+	"angry":                        {">:(", ">:-("},
+	"anguished":                    {"D:"},
+	"broken_heart":                 {"</3"},
+	"confused":                     {":/", ":-/", `:\`, `:-\`},
+	"disappointed":                 {":(", "):", ":-("},
+	"heart":                        {"<3"},
+	"kiss":                         {":*", ":-*"},
+	"laughing":                     {":>", ":->"},
+	"monkey_face":                  {":o)"},
+	"neutral_face":                 {":|"},
+	"open_mouth":                   {":o", ":O", ":-o", ":-O"},
+	"slightly_smiling_face":        {":)", "(:", ":-)"},
+	"smile":                        {":D", ":-D"},
+	"smiley":                       {"=)", "=-)"},
+	"stuck_out_tongue":             {":p", ":P", ":-p", ":-P", ":b", ":-b"},
+	"stuck_out_tongue_winking_eye": {";p", ";P", ";-p", ";-P", ";b", ";-b"},
+	"sunglasses":                   {"8)"},
+	"wink":                         {";)", ";-)"},
 }

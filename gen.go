@@ -14,31 +14,21 @@ import (
 	"strconv"
 	"strings"
 
-	. "github.com/brankas/emoji"
+	. "github.com/kenshaw/emoji"
 )
 
-const (
-	gemojiURL = "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json"
-)
-
-var (
-	flagOut = flag.String("o", "gemoji_data.go", "out")
-)
+const gemojiURL = "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json"
 
 func main() {
-	var err error
-
+	out := flag.String("o", "gemoji_data.go", "out")
 	flag.Parse()
-
 	// generate data
 	buf, err := generate()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	// write
-	err = ioutil.WriteFile(*flagOut, buf, 0644)
-	if err != nil {
+	if err = ioutil.WriteFile(*out, buf, 0644); err != nil {
 		log.Fatal(err)
 	}
 }

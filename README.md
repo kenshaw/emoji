@@ -13,7 +13,7 @@ no comprehensive [emoticon][wiki-emoticon] packages available at the time.
 Data for this package is generated from GitHub's [gemoji][gemoji] project:
 
 ```sh
-$ cd $GOPATH/src/github.com/brankas/emoji
+$ cd $GOPATH/src/github.com/kenshaw/emoji
 $ go generate
 ```
 
@@ -22,7 +22,7 @@ $ go generate
 Install in the usual [Go][go-project] fashion:
 
 ```sh
-$ go get -u github.com/brankas/emoji
+$ go get -u github.com/kenshaw/emoji
 ```
 
 ## Using
@@ -30,13 +30,13 @@ $ go get -u github.com/brankas/emoji
 `emoji` can be used similarly to the following:
 
 ```go
-// example/example.go
+// _example/example.go
 package main
 
 import (
 	"log"
 
-	"github.com/brankas/emoji"
+	"github.com/kenshaw/emoji"
 )
 
 func main() {
@@ -63,6 +63,6 @@ Please see the [GoDoc][godoc] listing for the complete API listing.
 
 [emoji-cheat-sheet]: http://www.webpagefx.com/tools/emoji-cheat-sheet/
 [gemoji]: https://github.com/github/gemoji
-[godoc]: https://godoc.org/github.com/brankas/emoji
+[godoc]: https://godoc.org/github.com/kenshaw/emoji
 [go-project]: https://golang.org/project
 [wiki-emoticon]: https://en.wikipedia.org/wiki/Emoticon

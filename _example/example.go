@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/brankas/emoji"
+	"github.com/kenshaw/emoji"
 )
 
 func main() {
