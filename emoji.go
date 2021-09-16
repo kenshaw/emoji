@@ -8,10 +8,6 @@ import (
 )
 
 //go:generate go run gen.go
-
-// Gemoji is a set of emoji data.
-type Gemoji []Emoji
-
 // Emoji represents a single emoji and associated data.
 type Emoji struct {
 	Emoji          string   `json:"emoji"`
@@ -21,45 +17,39 @@ type Emoji struct {
 	Tags           []string `json:"tags"`
 	UnicodeVersion string   `json:"unicode_version"`
 	IOSVersion     string   `json:"ios_version"`
+	SkinTones      bool     `json:"skin_tones"`
 }
 
 var (
 	// codeMap provides a map of the emoji unicode code to its emoji data.
 	codeMap map[string]int
-
 	// aliasMap provides a map of the alias to its emoji data.
 	aliasMap map[string]int
-
 	// codeReplacer is the string replacer for emoji codes.
 	codeReplacer *strings.Replacer
-
 	// aliasReplacer is the string replacer for emoji aliases.
 	aliasReplacer *strings.Replacer
-
 	// aliasEmoticonReplacer is the string replacer for emoji aliases with
 	// emoticons.
 	aliasEmoticonReplacer *strings.Replacer
-
 	// emoticonRE is the regexp to match emoticons on word boundaries.
 	emoticonRE *regexp.Regexp
-
 	// emoticonCodeMap is the map of emoticons to their emoji value.
 	emoticonCodeMap map[string]string
-
 	// emoticonCodeMap is the map of emoticons to their emoji alias.
 	emoticonAliasMap map[string]string
 )
 
 func init() {
+	data := Gemoji()
 	// initialize
-	codeMap = make(map[string]int, len(GemojiData))
-	aliasMap = make(map[string]int, len(GemojiData))
+	codeMap = make(map[string]int, len(data))
+	aliasMap = make(map[string]int, len(data))
 	emoticonCodeMap = make(map[string]string)
 	emoticonAliasMap = make(map[string]string)
-
 	// process emoji codes and aliases
 	var codePairs, aliasPairs []string
-	for i, e := range GemojiData {
+	for i, e := range data {
 		if e.Emoji == "" || len(e.Aliases) == 0 {
 			continue
 		}
@@ -80,7 +70,7 @@ func init() {
 		aliasEmoticonPairs = append(aliasEmoticonPairs, alias, vals[0])
 		for _, u := range vals {
 			reVals = append(reVals, regexp.QuoteMeta(u))
-			emoticonCodeMap[u] = GemojiData[aliasMap[a]].Emoji
+			emoticonCodeMap[u] = data[aliasMap[a]].Emoji
 			emoticonAliasMap[u] = alias
 		}
 	}
@@ -99,7 +89,8 @@ func FromCode(code string) *Emoji {
 	if !ok {
 		return nil
 	}
-	return &GemojiData[i]
+	data := Gemoji()
+	return &data[i]
 }
 
 // FromAlias retrieves the emoji data based on the provided alias in the form
@@ -113,7 +104,8 @@ func FromAlias(alias string) *Emoji {
 	if !ok {
 		return nil
 	}
-	return &GemojiData[i]
+	data := Gemoji()
+	return &data[i]
 }
 
 // FromEmoticon retrieves the emoji data based on the provided emoticon (ie,
