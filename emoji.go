@@ -50,7 +50,7 @@ func (emoji Emoji) Format(f fmt.State, verb rune) {
 
 // Tone applies a skin tone to the emoji, if applicable.
 func (emoji Emoji) Tone(skinTone SkinTone) string {
-	if !emoji.SkinTones {
+	if !emoji.SkinTones || skinTone == Neutral {
 		return emoji.Emoji
 	}
 	return emoji.Emoji + string(skinTone)
@@ -61,12 +61,32 @@ type SkinTone rune
 
 // Skin tone values.
 const (
-	Light SkinTone = 0x1f3fb + iota
+	Neutral SkinTone = 0
+	Light   SkinTone = 0x1f3fb + iota
 	MediumLight
 	Medium
 	MediumDark
 	Dark
 )
+
+// String satisfies the [fmt.Stringer] interface.
+func (s SkinTone) String() string {
+	switch s {
+	case Neutral:
+		return "neutral"
+	case Light:
+		return "light"
+	case MediumLight:
+		return "medium-light"
+	case Medium:
+		return "medium"
+	case MediumDark:
+		return "medium-dark"
+	case Dark:
+		return "dark"
+	}
+	return fmt.Sprintf("SkinTone<%x>", rune(s))
+}
 
 var (
 	// codeMap provides a map of the emoji unicode code to its emoji data.
