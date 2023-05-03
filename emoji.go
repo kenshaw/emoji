@@ -3,11 +3,14 @@ package emoji
 
 import (
 	"bytes"
+	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 //go:generate go run gen.go
+
 // Emoji represents a single emoji and associated data.
 type Emoji struct {
 	Emoji          string   `json:"emoji"`
@@ -19,6 +22,51 @@ type Emoji struct {
 	IOSVersion     string   `json:"ios_version"`
 	SkinTones      bool     `json:"skin_tones"`
 }
+
+// Format satisfies the [fmt.Formatter] interface.
+func (emoji Emoji) Format(f fmt.State, verb rune) {
+	switch verb {
+	case 's', 'c':
+		fmt.Fprint(f, emoji.Emoji)
+	case 'v':
+		if f.Flag('#') {
+			fmt.Fprintf(
+				f,
+				`{%s, %q, %q, %#v, %#v, %q, %q, %t}`,
+				strconv.QuoteToASCII(emoji.Emoji),
+				emoji.Description,
+				emoji.Category,
+				emoji.Aliases,
+				emoji.Tags,
+				emoji.UnicodeVersion,
+				emoji.IOSVersion,
+				emoji.SkinTones,
+			)
+		} else {
+			fmt.Fprint(f, emoji.Emoji)
+		}
+	}
+}
+
+// Tone applies a skin tone to the emoji, if applicable.
+func (emoji Emoji) Tone(skinTone SkinTone) string {
+	if !emoji.SkinTones {
+		return emoji.Emoji
+	}
+	return emoji.Emoji + string(skinTone)
+}
+
+// SkinTone is a skin tone modifier.
+type SkinTone rune
+
+// Skin tone values.
+const (
+	Light SkinTone = 0x1f3fb + iota
+	MediumLight
+	Medium
+	MediumDark
+	Dark
+)
 
 var (
 	// codeMap provides a map of the emoji unicode code to its emoji data.

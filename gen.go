@@ -8,11 +8,8 @@ import (
 	"flag"
 	"fmt"
 	"go/format"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/kenshaw/emoji"
@@ -35,24 +32,8 @@ func run(ctx context.Context, urlstr, out string) error {
 		return err
 	}
 	// write
-	return ioutil.WriteFile(out, buf, 0644)
+	return os.WriteFile(out, buf, 0644)
 }
-
-var replacer = strings.NewReplacer(
-	"{emoji.Emoji{", "{\n{",
-	", emoji.Emoji{", ",\n{",
-	"}}", "},\n}",
-	", Description:", ", ",
-	", Category:", ", ",
-	", Aliases:", ", ",
-	", Tags:", ", ",
-	", UnicodeVersion:", ", ",
-	", IOSVersion:", ", ",
-	", SkinTones:", ", ",
-	"emoji.Emoji", "Emoji",
-)
-
-var emojiRE = regexp.MustCompile(`\{Emoji:"([^"]*)"`)
 
 func generate(ctx context.Context, urlstr string) ([]byte, error) {
 	// load gemoji data
@@ -73,19 +54,18 @@ func generate(ctx context.Context, urlstr string) ([]byte, error) {
 	if err := dec.Decode(&data); err != nil {
 		return nil, err
 	}
-	// add header
+	// build string
 	str := replacer.Replace(fmt.Sprintf(tpl, urlstr, data))
-	// change the format of the unicode string
-	str = emojiRE.ReplaceAllStringFunc(str, func(s string) string {
-		var err error
-		if s, err = strconv.Unquote(s[len("{Emoji:"):]); err != nil {
-			panic(err)
-		}
-		return "{" + strconv.QuoteToASCII(s)
-	})
 	// format
 	return format.Source([]byte(str))
 }
+
+var replacer = strings.NewReplacer(
+	"{{", "{\n{",
+	"}, {", "},\n{",
+	"}}", "},\n}",
+	"emoji.Emoji", "Emoji",
+)
 
 const tpl = `package emoji
 
