@@ -2,6 +2,7 @@ package emoji_test
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/kenshaw/emoji"
 )
@@ -24,4 +25,15 @@ func Example() {
 	// :-) -- 🙂
 	// :-) :D >:( -- :slightly_smiling_face: :smile: :angry:
 	// :-) :D >:( -- 🙂 😄 😠
+}
+
+func ExampleSkinTone() {
+	e := emoji.FromAlias("thumbsup")
+	s := []string{e.Emoji}
+	for skinTone := emoji.Light; skinTone <= emoji.Dark; skinTone++ {
+		s = append(s, e.Tone(skinTone))
+	}
+	fmt.Println(strings.Join(s, " "))
+	// Output:
+	// 👍 👍🏻 👍🏼 👍🏽 👍🏾 👍🏿
 }

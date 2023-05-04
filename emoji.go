@@ -61,12 +61,12 @@ type SkinTone rune
 
 // Skin tone values.
 const (
-	Neutral SkinTone = 0
-	Light   SkinTone = 0x1f3fb + iota
-	MediumLight
-	Medium
-	MediumDark
-	Dark
+	Neutral     SkinTone = 0
+	Light       SkinTone = 0x1f3fb
+	MediumLight SkinTone = 0x1f3fc
+	Medium      SkinTone = 0x1f3fd
+	MediumDark  SkinTone = 0x1f3fe
+	Dark        SkinTone = 0x1f3ff
 )
 
 // String satisfies the [fmt.Stringer] interface.
