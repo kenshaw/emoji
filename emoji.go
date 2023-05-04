@@ -53,8 +53,12 @@ func (emoji Emoji) Tone(skinTone SkinTone) string {
 	if !emoji.SkinTones || skinTone == Neutral {
 		return emoji.Emoji
 	}
-	return emoji.Emoji + string(skinTone)
+	st, r := string(skinTone), []rune(emoji.Emoji)
+	return string(r[:1]) + st + manWomanRE.ReplaceAllString(string(r[1:]), `$1`+st)
 }
+
+// manWomanRE is regexp that matches the man, woman emojis.
+var manWomanRE = regexp.MustCompile(`(👨|👩)`)
 
 // SkinTone is a skin tone modifier.
 type SkinTone rune

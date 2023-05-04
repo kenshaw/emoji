@@ -28,12 +28,17 @@ func Example() {
 }
 
 func ExampleSkinTone() {
-	e := emoji.FromAlias("thumbsup")
-	s := []string{e.Emoji}
-	for skinTone := emoji.Light; skinTone <= emoji.Dark; skinTone++ {
-		s = append(s, e.Tone(skinTone))
+	for _, alias := range []string{"thumbsup", "man_technologist", "couplekiss_woman_woman", "female_detective"} {
+		e := emoji.FromAlias(alias)
+		s := []string{e.Emoji}
+		for skinTone := emoji.Light; skinTone <= emoji.Dark; skinTone++ {
+			s = append(s, e.Tone(skinTone))
+		}
+		fmt.Println(strings.Join(s, " "))
 	}
-	fmt.Println(strings.Join(s, " "))
 	// Output:
 	// 👍 👍🏻 👍🏼 👍🏽 👍🏾 👍🏿
+	// 👨‍💻 👨🏻‍💻 👨🏼‍💻 👨🏽‍💻 👨🏾‍💻 👨🏿‍💻
+	// 👩‍❤️‍💋‍👩 👩🏻‍❤️‍💋‍👩🏻 👩🏼‍❤️‍💋‍👩🏼 👩🏽‍❤️‍💋‍👩🏽 👩🏾‍❤️‍💋‍👩🏾 👩🏿‍❤️‍💋‍👩🏿
+	// 🕵️‍♀️ 🕵🏻️‍♀️ 🕵🏼️‍♀️ 🕵🏽️‍♀️ 🕵🏾️‍♀️ 🕵🏿️‍♀️
 }
