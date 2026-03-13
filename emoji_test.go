@@ -2,6 +2,7 @@ package emoji
 
 import (
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -114,5 +115,45 @@ func TestReplacers(t *testing.T) {
 		if s != x.exp {
 			t.Errorf("test %d `%s` expected `%s`, got: `%s`", i, x.v, x.exp, s)
 		}
+	}
+}
+
+func TestParseSkinTone(t *testing.T) {
+	tests := []struct {
+		s   string
+		exp SkinTone
+		err bool
+	}{
+		{"", Neutral, false},
+		{" ", Neutral, false},
+		{"a", Neutral, true},
+		{"neutral1", Neutral, false},
+		{"nuetral2", Neutral, true},
+		{"neutral", Neutral, false},
+		{"dark1", Dark, false},
+		{"medium light", MediumLight, false},
+		{"medium dark 1", MediumDark, false},
+		{"DARK", Dark, false},
+		{"Medium-Light", MediumLight, false},
+		{"Medium-LightZ", Neutral, true},
+		{"lite", Light, false},
+		{"Medium Lite", MediumLight, false},
+		{" LIGHT ", Light, false},
+	}
+	for i, test := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			t.Logf("testing %q", test.s)
+			s, err := ParseSkinTone(test.s)
+			switch {
+			case test.err && err == nil:
+				t.Errorf("expected error")
+			case !test.err && err != nil:
+				t.Errorf("expected no error, got: %v", err)
+			}
+			if s != test.exp {
+				t.Errorf("expected %s, got: %s", test.exp, s)
+			}
+			t.Logf("got: %c", s)
+		})
 	}
 }
