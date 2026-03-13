@@ -139,6 +139,7 @@ func TestParseSkinTone(t *testing.T) {
 		{"lite", Light, false},
 		{"Medium Lite", MediumLight, false},
 		{" LIGHT ", Light, false},
+		{"none", Neutral, false},
 	}
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {

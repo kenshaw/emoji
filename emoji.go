@@ -80,7 +80,7 @@ func ParseSkinTone(str string) (SkinTone, error) {
 		return Neutral, nil
 	}
 	switch cleanRE.ReplaceAllString(s, "") {
-	case "neutral":
+	case "neutral", "none":
 		return Neutral, nil
 	case "light", "lite":
 		return Light, nil
@@ -93,7 +93,7 @@ func ParseSkinTone(str string) (SkinTone, error) {
 	case "dark":
 		return Dark, nil
 	}
-	return Neutral, fmt.Errorf("invalid skin tone: %q", str)
+	return Neutral, ErrInvalidSkinTone
 }
 
 // UnmarshalText satisfies the [encoding.TextUnmarshaler] interface.
@@ -126,6 +126,19 @@ func (s SkinTone) String() string {
 	}
 	return fmt.Sprintf("SkinTone<%x>", rune(s))
 }
+
+// Error is a emoji package error.
+type Error string
+
+// Error satisfies the error interface.
+func (err Error) Error() string {
+	return string(err)
+}
+
+const (
+	// ErrInvalidSkinTone is the invalid skin tone error.
+	ErrInvalidSkinTone Error = "invalid skin tone"
+)
 
 var (
 	// codeMap provides a map of the emoji unicode code to its emoji data.
