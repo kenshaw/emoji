@@ -127,6 +127,8 @@ func (s SkinTone) String() string {
 	return fmt.Sprintf("SkinTone<%x>", rune(s))
 }
 
+var skinToneRE = regexp.MustCompile(`^(.+?)_((?:neutral|light|medium_light|medium|medium_dark|dark))_skin_tone$`)
+
 // Error is a emoji package error.
 type Error string
 
@@ -221,11 +223,24 @@ func FromAlias(alias string) *Emoji {
 	if strings.HasPrefix(alias, ":") && strings.HasSuffix(alias, ":") {
 		alias = alias[1 : len(alias)-1]
 	}
+	tone := Neutral
+	// support skin tones
+	matches := skinToneRE.FindStringSubmatch(alias)
+	if len(matches) == 3 {
+		alias = matches[1]
+		tone, _ = ParseSkinTone(matches[2])
+	}
 	i, ok := aliasMap[alias]
 	if !ok {
 		return nil
 	}
 	data := Gemoji()
+	if tone != Neutral {
+		modifiedEmoji := data[i]
+		tonedString := modifiedEmoji.Tone(tone)
+		modifiedEmoji.Emoji = tonedString
+		return &modifiedEmoji
+	}
 	return &data[i]
 }
 
