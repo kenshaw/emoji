@@ -320,3 +320,20 @@ var emoticonMap = map[string][]string{
 
 // cleanRE is matches non alpha characters.
 var cleanRE = regexp.MustCompile(`(?i)[^a-z]`)
+
+// AddAlias adds the specified emoji alias
+func AddAlias(alias string, dest string) error {
+	if strings.HasPrefix(alias, ":") && strings.HasSuffix(alias, ":") {
+		alias = alias[1 : len(alias)-1]
+	}
+	if strings.HasPrefix(dest, ":") && strings.HasSuffix(dest, ":") {
+		dest = dest[1 : len(dest)-1]
+	}
+
+	if _, ok := aliasMap[dest]; !ok {
+		return fmt.Errorf("destination emoji alias does not exist")
+	}
+
+	aliasMap[alias] = aliasMap[dest]
+	return nil
+}

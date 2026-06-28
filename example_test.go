@@ -14,6 +14,10 @@ func Example() {
 	e2 := emoji.FromAlias("slightly_smiling_face")
 	fmt.Println(":-)", "--", e2.Emoji)
 
+	emoji.AddAlias(":rolling_on_the_floor_laughing:", ":rofl:")
+	e3 := emoji.FromAlias("rolling_on_the_floor_laughing")
+	fmt.Println(e3.Emoji)
+
 	s1 := emoji.ReplaceEmoticonsWithAliases(":-) :D >:(")
 	fmt.Println(":-) :D >:(", "--", s1)
 
@@ -23,6 +27,7 @@ func Example() {
 	// Output:
 	// :-) -- 🙂
 	// :-) -- 🙂
+	// 🤣
 	// :-) :D >:( -- :slightly_smiling_face: :smile: :angry:
 	// :-) :D >:( -- 🙂 😄 😠
 }
