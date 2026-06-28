@@ -36,9 +36,16 @@ func ExampleSkinTone() {
 		}
 		fmt.Println(strings.Join(s, " "))
 	}
+	for _, alias := range []string{":+1_light_skin_tone:", ":+1_medium_light_skin_tone:", "+1_dark_skin_tone"} {
+		e := emoji.FromAlias(alias)
+		fmt.Println(e)
+	}
 	// Output:
 	// 👍 👍🏻 👍🏼 👍🏽 👍🏾 👍🏿
 	// 👨‍💻 👨🏻‍💻 👨🏼‍💻 👨🏽‍💻 👨🏾‍💻 👨🏿‍💻
 	// 👩‍❤️‍💋‍👩 👩🏻‍❤️‍💋‍👩🏻 👩🏼‍❤️‍💋‍👩🏼 👩🏽‍❤️‍💋‍👩🏽 👩🏾‍❤️‍💋‍👩🏾 👩🏿‍❤️‍💋‍👩🏿
 	// 🕵️‍♀️ 🕵🏻️‍♀️ 🕵🏼️‍♀️ 🕵🏽️‍♀️ 🕵🏾️‍♀️ 🕵🏿️‍♀️
+	// 👍🏻
+	// 👍🏼
+	// 👍🏿
 }
