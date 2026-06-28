@@ -57,7 +57,7 @@ func TestReplacers(t *testing.T) {
 		v, exp string
 	}{
 		{ReplaceCodes, ":thumbsup: +1 for \U0001f37a! 🍺 \U0001f44d", ":thumbsup: +1 for :beer:! :beer: :+1:"},
-		{ReplaceAliases, ":thumbsup: +1 :+1: :beer:", "\U0001f44d +1 \U0001f44d \U0001f37a"},
+		{ReplaceAliases, ":thumbsup: +1 :+1: :beer: :lol:", "\U0001f44d +1 \U0001f44d \U0001f37a \U0001f923"},
 
 		{ReplaceEmoticonsWithCodes, "foobar", "foobar"},
 		{ReplaceEmoticonsWithCodes, " foobar", " foobar"},

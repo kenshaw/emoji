@@ -181,6 +181,16 @@ func init() {
 			}
 			aliasMap[a], aliasPairs = i, append(aliasPairs, ":"+a+":", e.Emoji)
 		}
+		// in addition to aliases, also include tags
+		for _, t := range e.Tags {
+			if t == "" {
+				continue
+			}
+			// but only if it doesn't already exist, e.g. "angry"
+			if _, ok := aliasMap[t]; !ok {
+				aliasMap[t], aliasPairs = i, append(aliasPairs, ":"+t+":", e.Emoji)
+			}
+		}
 	}
 	// process emoticons
 	reVals := make([]string, 0)
