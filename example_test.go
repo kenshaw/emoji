@@ -24,12 +24,16 @@ func Example() {
 	s2 := emoji.ReplaceEmoticonsWithCodes(":-) :D >:(")
 	fmt.Println(":-) :D >:(", "--", s2)
 
+	s3 := emoji.ReplaceAliases("new alias :rolling_on_the_floor_laughing: works")
+	fmt.Println(s3)
+
 	// Output:
 	// :-) -- 🙂
 	// :-) -- 🙂
 	// 🤣
 	// :-) :D >:( -- :slightly_smiling_face: :smile: :angry:
 	// :-) :D >:( -- 🙂 😄 😠
+	// new alias 🤣 works
 }
 
 func ExampleSkinTone() {

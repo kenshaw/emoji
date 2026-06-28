@@ -145,6 +145,7 @@ var (
 	codeMap map[string]int
 	// aliasMap provides a map of the alias to its emoji data.
 	aliasMap map[string]int
+	aliasPairs []string
 	// codeReplacer is the string replacer for emoji codes.
 	codeReplacer *strings.Replacer
 	// aliasReplacer is the string replacer for emoji aliases.
@@ -168,7 +169,7 @@ func init() {
 	emoticonCodeMap = make(map[string]string)
 	emoticonAliasMap = make(map[string]string)
 	// process emoji codes and aliases
-	var codePairs, aliasPairs []string
+	var codePairs []string
 	for i, e := range data {
 		if e.Emoji == "" || len(e.Aliases) == 0 {
 			continue
@@ -334,6 +335,11 @@ func AddAlias(alias string, dest string) error {
 		return fmt.Errorf("destination emoji alias does not exist")
 	}
 
-	aliasMap[alias] = aliasMap[dest]
+	data := Gemoji()
+	idx := aliasMap[dest]
+	aliasMap[alias], aliasPairs = idx, append(aliasPairs, ":"+alias+":", data[idx].Emoji)
+
+	// update replacer with latest
+	aliasReplacer = strings.NewReplacer(aliasPairs...)
 	return nil
 }
